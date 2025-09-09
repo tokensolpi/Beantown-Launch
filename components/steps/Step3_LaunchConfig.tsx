@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { TokenDetails } from '../../types';
 import type { ChainID } from '../../types';
@@ -28,8 +27,8 @@ const Step3_LaunchConfig: React.FC<Props> = ({ formData, updateFormData }) => {
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
-        <h3 className="text-lg font-semibold mb-1">Multichain Configuration (via Wormhole)</h3>
-        <p className="text-sm text-gray-400 mb-4">Select which chains to launch your token on. Solana is the base chain.</p>
+        <h3 className="text-lg font-semibold mb-1">Cross-Chain Deployment</h3>
+        <p className="text-sm text-gray-400 mb-4">Bridge your token to other chains using Wormhole. Solana is the base chain.</p>
         <ChainSelector selectedChains={formData.selectedChains} onChainSelect={handleChainSelect} />
       </div>
 

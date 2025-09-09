@@ -18,12 +18,24 @@ const fileToBase64 = (file: File): Promise<{base64: string, mimeType: string}> =
     });
 };
 
+const LOGO_STYLES = ['Minimalist', 'Abstract', 'Mascot', 'Geometric', 'Retro'];
+const LOGO_COLORS = [
+    { name: 'Purple', value: '#a855f7' },
+    { name: 'Blue', value: '#3b82f6' },
+    { name: 'Green', value: '#22c55e' },
+    { name: 'Orange', value: '#f97316' },
+    { name: 'Red', value: '#ef4444' },
+    { name: 'Cyan', value: '#06b6d4' },
+];
+
 const Step2_TokenLogo: React.FC<Props> = ({ formData, updateFormData }) => {
   const [prompt, setPrompt] = useState<string>('');
   const [editPrompt, setEditPrompt] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [logoStyle, setLogoStyle] = useState<string>('Minimalist');
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleGenerate = async () => {
@@ -31,7 +43,7 @@ const Step2_TokenLogo: React.FC<Props> = ({ formData, updateFormData }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const imageUrl = await generateLogo(prompt);
+      const imageUrl = await generateLogo(prompt, logoStyle, selectedColors);
       updateFormData({ logoUrl: imageUrl });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
@@ -70,6 +82,18 @@ const Step2_TokenLogo: React.FC<Props> = ({ formData, updateFormData }) => {
         setIsLoading(false);
       }
     }
+  };
+  
+  const handleColorSelect = (colorName: string) => {
+    setSelectedColors(prev => {
+        const newColors = new Set(prev);
+        if (newColors.has(colorName)) {
+            newColors.delete(colorName);
+        } else if (newColors.size < 2) { // Limit to 2 colors
+            newColors.add(colorName);
+        }
+        return Array.from(newColors);
+    });
   };
 
   return (
@@ -111,16 +135,40 @@ const Step2_TokenLogo: React.FC<Props> = ({ formData, updateFormData }) => {
             </button>
           </div>
         ) : (
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Generate Logo with AI</h3>
-            <p className="text-sm text-gray-400 mb-4">Describe the logo you want to create. Be descriptive for the best results.</p>
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="e.g., 'A minimalist phoenix rising, purple and green neon colors'"
-              rows={3}
-              className="w-full bg-gray-700/50 border border-gray-600 rounded-md px-3 py-2 focus:ring-purple-500 focus:border-purple-500 transition"
-            />
+          <div className="space-y-4">
+            <div>
+                <h3 className="text-lg font-semibold mb-2">Generate Logo with AI</h3>
+                <p className="text-sm text-gray-400 mb-4">Describe the logo you want to create. Be descriptive for the best results.</p>
+                <textarea
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="e.g., 'A minimalist phoenix rising'"
+                  rows={2}
+                  className="w-full bg-gray-700/50 border border-gray-600 rounded-md px-3 py-2 focus:ring-purple-500 focus:border-purple-500 transition"
+                />
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium text-gray-300 mb-2">Select a Style</h4>
+              <div className="flex flex-wrap gap-2">
+                {LOGO_STYLES.map(style => (
+                  <button key={style} type="button" onClick={() => setLogoStyle(style)} className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${logoStyle === style ? 'bg-purple-600 text-white' : 'bg-gray-700 hover:bg-gray-600'}`}>
+                    {style}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium text-gray-300 mb-2">Dominant Colors (up to 2)</h4>
+              <div className="flex flex-wrap gap-3">
+                {LOGO_COLORS.map(color => (
+                    <button key={color.name} type="button" onClick={() => handleColorSelect(color.name)} style={{ backgroundColor: color.value }} className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColors.includes(color.name) ? 'border-white ring-2 ring-offset-2 ring-offset-gray-800 ring-white' : 'border-transparent'}`} aria-label={`Select ${color.name}`}>
+                    </button>
+                ))}
+              </div>
+            </div>
+
             <button onClick={handleGenerate} disabled={isLoading || !prompt} className="w-full mt-2 px-6 py-2 text-sm font-semibold text-white bg-green-600 rounded-md hover:bg-green-500 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">
               {isLoading ? 'Generating...' : 'Generate Logo'}
             </button>

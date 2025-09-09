@@ -1,5 +1,5 @@
 {
-  "name": "NovaLaunch - Solana Multichain Token Launchpad",
+  "name": "Twisted Divergence - Solana Multichain Token Launchpad",
   "description": "A cutting-edge launchpad for creating and deploying multichain SPL tokens on Solana. Leverage the power of Wormhole for native cross-chain liquidity and utilize generative AI to design unique token logos. Launch your project with a bonding curve, MEV protection, and a dedicated community token page.",
   "requestFramePermissions": []
 }

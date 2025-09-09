@@ -12,11 +12,20 @@ if (!API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: API_KEY! });
 
-export const generateLogo = async (prompt: string): Promise<string> => {
+export const generateLogo = async (prompt: string, style: string, colors: string[]): Promise<string> => {
   try {
+    let refinedPrompt = `A ${style}, modern, flat vector logo for a cryptocurrency or tech company. The logo should be centered on a solid dark background.`;
+
+    if (colors.length > 0) {
+      refinedPrompt += ` The dominant colors should be ${colors.join(' and ')}.`;
+    }
+
+    refinedPrompt += ` The theme is: "${prompt}". The logo should be simple, memorable, and suitable for a small icon. Avoid text unless specified.`;
+
+
     const response = await ai.models.generateImages({
         model: 'imagen-4.0-generate-001',
-        prompt: `A minimalist, modern, flat vector logo for a cryptocurrency or tech company. The logo should be centered on a solid dark background. The theme is: "${prompt}". The logo should be simple, memorable, and suitable for a small icon. Avoid text unless specified.`,
+        prompt: refinedPrompt,
         config: {
           numberOfImages: 1,
           outputMimeType: 'image/png',
